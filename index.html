@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2 Minutes of Blessings for Mona Akka</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Audio Control */
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid #d4af37;
+            border-radius: 30px;
+            padding: 10px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #d4af37;
+            font-size: 0.9rem;
+        }
+
+        .audio-control:hover {
+            background: rgba(212, 175, 55, 0.4);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .audio-control.playing {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #e94560, #4ecdc4, #d4af37);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .timer {
+            position: fixed;
+            top: 70px;
+            right: 30px;
+            font-size: 1.8rem;
+            color: #d4af37;
+            z-index: 1000;
+            font-family: 'Playfair Display', serif;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Cross Decoration */
+        .cross {
+            position: fixed;
+            top: 70px;
+            left: 30px;
+            font-size: 2rem;
+            color: #d4af37;
+            z-index: 1000;
+            opacity: 0.8;
+        }
+
+        /* Main Stage */
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Background Effects */
+        .light-rays {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #d4af37;
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Scene Container */
+        .scene {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            transition: all 1s ease;
+            padding: 60px;
+            text-align: center;
+        }
+
+        .scene.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .scene.fade-out {
+            opacity: 0;
+            transform: scale(1.1) translateY(-20px);
+            transition: all 1s ease;
+        }
+
+        /* Typography */
+        .scene-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .blessing-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 3.2rem);
+            max-width: 950px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+            font-weight: 600;
+        }
+
+        .bible-verse {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            font-style: italic;
+            color: #4ecdc4;
+            max-width: 800px;
+            line-height: 1.6;
+            border-left: 3px solid #d4af37;
+            padding-left: 30px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .verse-reference {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: #d4af37;
+            margin-top: 10px;
+            font-weight: 500;
+            text-align: right;
+            font-style: normal;
+        }
+
+        .name-highlight {
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.4em;
+            color: #e94560;
+            text-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+        }
+
+        /* Special Effects */
+        .glow-text {
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #d4af37, 0 0 40px #d4af37; }
+            to { text-shadow: 0 0 40px #e94560, 0 0 80px #e94560; }
+        }
+
+        .floating {
+            animation: floating 4s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .heart-beat {
+            font-size: 3rem;
+            animation: heartbeat 2s infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+        }
+
+        /* Age Display */
+        .age-display {
+            font-family: 'Playfair Display', serif;
+            font-size: 10rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d4af37, #f4e5c2, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: agePulse 3s infinite;
+            line-height: 1;
+        }
+
+        @keyframes agePulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(1.2); }
+        }
+
+        /* Dove Animation */
+        .dove {
+            font-size: 4rem;
+            animation: fly 3s ease-in-out infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes fly {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(0) translateX(0); }
+            75% { transform: translateY(-10px) translateX(-10px); }
+        }
+
+        /* Crown of Life */
+        .crown {
+            font-size: 5rem;
+            animation: crownGlow 2s infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes crownGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px #d4af37); }
+            50% { filter: drop-shadow(0 0 40px #d4af37); }
+        }
+
+        /* Final Scene */
+        .final-scene {
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, transparent 70%);
+        }
+
+        .final-prayer {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            max-width: 900px;
+            line-height: 2;
+            color: #fff;
+            margin-top: 30px;
+        }
+
+        .signature {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: #d4af37;
+            margin-top: 40px;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Start Screen */
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.8s;
+        }
+
+        .start-cross {
+            font-size: 5rem;
+            color: #d4af37;
+            margin-bottom: 30px;
+            animation: crossPulse 2s infinite;
+        }
+
+        @keyframes crossPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .start-title {
+            font-family: 'Great Vibes', cursive;
+            font-size: 6rem;
+            color: #e94560;
+            margin-bottom: 10px;
+            text-shadow: 0 0 40px rgba(233, 69, 96, 0.3);
+        }
+
+        .start-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: #d4af37;
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+        }
+
+        .start-text {
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 50px;
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .start-btn {
+            background: transparent;
+            border: 3px solid #d4af37;
+            color: #d4af37;
+            padding: 20px 60px;
+            font-size: 1.3rem;
+            font-family: 'Playfair Display', serif;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.4s;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .start-btn:hover {
+            background: #d4af37;
+            color: #1a1a2e;
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+        }
+
+        /* Amen Animation */
+        .amen {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4rem;
+            color: #d4af37;
+            margin-top: 30px;
+            animation: amenGlow 2s infinite;
+        }
+
+        @keyframes amenGlow {
+            0%, 100% { text-shadow: 0 0 20px #d4af37; }
+            50% { text-shadow: 0 0 40px #d4af37, 0 0 60px #d4af37; }
+        }
+
+        /* Music Note Animation */
+        .music-note {
+            position: fixed;
+            font-size: 1.5rem;
+            color: #d4af37;
+            opacity: 0;
+            animation: floatNote 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes floatNote {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-100px) rotate(20deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio Control -->
+    <div class="audio-control" id="audioControl" onclick="toggleMusic()">
+        <span id="audioIcon">🎵</span>
+        <span id="audioText">Click to Enable Music</span>
+    </div>
+
+    <!-- Hidden Audio Element -->
+    <audio id="bgMusic" loop>
+        <!-- Using a peaceful instrumental worship track -->
+        <source src="Elevation Worship - The Blessing (Lyrics) ft. Kari Jobe & Cody Carnes - music meets heaven.mp3" type="audio/mpeg">
+        <!-- Fallback: You can replace with your own Christian instrumental music file -->
+    </audio>
+
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+        <div class="start-cross">✝️</div>
+        <div class="start-title">Mona Akka</div>
+        <div class="start-subtitle">28 Years of Grace</div>
+        <div class="start-text">
+            "For I know the plans I have for you," declares the Lord,<br>
+            "plans to prosper you and not to harm you, plans to give you hope and a future."
+            <br><span style="color: #d4af37; font-size: 0.9rem;">— Jeremiah 29:11</span>
+        </div>
+        <button class="start-btn" onclick="startBlessings()">🙏 Begin 2 Minutes of Blessings</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="cross">✝️</div>
+    <div class="timer" id="timer">00:00</div>
+
+    <!-- Background Effects -->
+    <div class="light-rays"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Main Stage -->
+    <div class="stage" id="stage">
+
+        <!-- Scene 1: Opening (0-6s) -->
+        <div class="scene" id="scene-0">
+            <div class="scene-number">Celebrating</div>
+            <div class="age-display">28</div>
+            <div class="blessing-text" style="font-family: 'Great Vibes', cursive; font-size: 3rem; color: #e94560;">
+                Years of God's Faithfulness
+            </div>
+            <div class="dove">🕊️</div>
+        </div>
+
+        <!-- Scene 2: Blessing 1 (6-12s) -->
+        <div class="scene" id="scene-1">
+            <div class="scene-number">Blessing 01</div>
+            <div class="blessing-text glow-text">
+                May <span class="name-highlight">Mona Akka</span>'s 28th year<br>
+                be filled with the peace of God<br>
+                that surpasses all understanding
+            </div>
+            <div class="heart-beat">💝</div>
+            <div class="bible-verse">
+                "And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus."
+                <div class="verse-reference">— Philippians 4:7</div>
+            </div>
+        </div>
+
+        <!-- Scene 3: Blessing 2 (12-18s) -->
+        <div class="scene" id="scene-2">
+            <div class="scene-number">Blessing 02</div>
+            <div class="blessing-text floating">
+                May the Lord bless <span class="name-highlight">Mona Akka</span><br>
+                and keep her;<br>
+                may His face shine upon her
+            </div>
+            <div class="crown">👑</div>
+            <div class="bible-verse">
+                "The Lord bless you and keep you; the Lord make his face shine on you and be gracious to you; the Lord turn his face toward you and give you peace."
+                <div class="verse-reference">— Numbers 6:24-26</div>
+            </div>
+        </div>
+
+        <!-- Scene 4: Blessing 3 (18-24s) -->
+        <div class="scene" id="scene-3">
+            <div class="scene-number">Blessing 03</div>
+            <div class="blessing-text shimmer">
+                May <span class="name-highlight">Mona Akka</span> trust in the Lord<br>
+                with all her heart,<br>
+                leaning not on her own understanding
+            </div>
+            <div class="heart-beat">✨</div>
+            <div class="bible-verse">
+                "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight."
+                <div class="verse-reference">— Proverbs 3:5-6</div>
+            </div>
+        </div>
+
+        <!-- Scene 5: Blessing 4 (24-30s) -->
+        <div class="scene" id="scene-4">
+            <div class="scene-number">Blessing 04</div>
+            <div class="blessing-text glow-text">
+                May <span class="name-highlight">Mona Akka</span> be strong<br>
+                and courageous,<br>
+                for the Lord her God is with her
+            </div>
+            <div class="dove">🕊️</div>
+            <div class="bible-verse">
+                "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go."
+                <div class="verse-reference">— Joshua 1:9</div>
+            </div>
+        </div>
+
+        <!-- Scene 6: Blessing 5 (30-36s) -->
+        <div class="scene" id="scene-5">
+            <div class="scene-number">Blessing 05</div>
+            <div class="blessing-text floating">
+                May the joy of the Lord<br>
+                be <span class="name-highlight">Mona Akka</span>'s strength<br>
+                today and always
+            </div>
+            <div class="heart-beat">🌟</div>
+            <div class="bible-verse">
+                "Do not grieve, for the joy of the Lord is your strength."
+                <div class="verse-reference">— Nehemiah 8:10</div>
+            </div>
+        </div>
+
+        <!-- Scene 7: Blessing 6 (36-42s) -->
+        <div class="scene" id="scene-6">
+            <div class="scene-number">Blessing 06</div>
+            <div class="blessing-text shimmer">
+                May <span class="name-highlight">Mona Akka</span> walk by faith,<br>
+                not by sight,<br>
+                guided by God's eternal light
+            </div>
+            <div class="crown">✝️</div>
+            <div class="bible-verse">
+                "For we walk by faith, not by sight."
+                <div class="verse-reference">— 2 Corinthians 5:7</div>
+            </div>
+        </div>
+
+        <!-- Scene 8: Blessing 7 (42-48s) -->
+        <div class="scene" id="scene-7">
+            <div class="scene-number">Blessing 07</div>
+            <div class="blessing-text glow-text">
+                May the love of Christ<br>
+                dwell richly in <span class="name-highlight">Mona Akka</span>'s heart,<br>
+                filling her with all wisdom
+            </div>
+            <div class="heart-beat">💖</div>
+            <div class="bible-verse">
+                "Let the message of Christ dwell among you richly as you teach and admonish one another with all wisdom."
+                <div class="verse-reference">— Colossians 3:16</div>
+            </div>
+        </div>
+
+        <!-- Scene 9: Blessing 8 (48-54s) -->
+        <div class="scene" id="scene-8">
+            <div class="scene-number">Blessing 08</div>
+            <div class="blessing-text floating">
+                May <span class="name-highlight">Mona Akka</span> reap<br>
+                the fruit of the Spirit:<br>
+                love, joy, peace, patience, kindness
+            </div>
+            <div class="dove">🕊️</div>
+            <div class="bible-verse">
+                "But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness and self-control."
+                <div class="verse-reference">— Galatians 5:22-23</div>
+            </div>
+        </div>
+
+        <!-- Scene 10: Blessing 9 (54-60s) -->
+        <div class="scene" id="scene-9">
+            <div class="scene-number">Blessing 09</div>
+            <div class="blessing-text shimmer">
+                May <span class="name-highlight">Mona Akka</span> mount up<br>
+                with wings like eagles,<br>
+                running and not growing weary
+            </div>
+            <div class="heart-beat">🦅</div>
+            <div class="bible-verse">
+                "But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary."
+                <div class="verse-reference">— Isaiah 40:31</div>
+            </div>
+        </div>
+
+        <!-- Scene 11: Blessing 10 (60-66s) -->
+        <div class="scene" id="scene-10">
+            <div class="scene-number">Blessing 10</div>
+            <div class="blessing-text glow-text">
+                May the Lord give <span class="name-highlight">Mona Akka</span><br>
+                the desires of her heart<br>
+                and make all her plans succeed
+            </div>
+            <div class="crown">👑</div>
+            <div class="bible-verse">
+                "May he give you the desire of your heart and make all your plans succeed."
+                <div class="verse-reference">— Psalm 20:4</div>
+            </div>
+        </div>
+
+        <!-- Scene 12: Blessing 11 (66-72s) -->
+        <div class="scene" id="scene-11">
+            <div class="scene-number">Blessing 11</div>
+            <div class="blessing-text floating">
+                May <span class="name-highlight">Mona Akka</span> be<br>
+                the head and not the tail,<br>
+                above and never beneath
+            </div>
+            <div class="heart-beat">⭐</div>
+            <div class="bible-verse">
+                "The Lord will make you the head, not the tail. If you pay attention to the commands of the Lord your God, you will always be at the top."
+                <div class="verse-reference">— Deuteronomy 28:13</div>
+            </div>
+        </div>
+
+        <!-- Scene 13: Blessing 12 (72-78s) -->
+        <div class="scene" id="scene-12">
+            <div class="scene-number">Blessing 12</div>
+            <div class="blessing-text shimmer">
+                May grace and peace<br>
+                be multiplied to <span class="name-highlight">Mona Akka</span><br>
+                through the knowledge of God
+            </div>
+            <div class="dove">🕊️</div>
+            <div class="bible-verse">
+                "Grace and peace be yours in abundance through the knowledge of God and of Jesus our Lord."
+                <div class="verse-reference">— 2 Peter 1:2</div>
+            </div>
+        </div>
+
+        <!-- Scene 14: Blessing 13 (78-84s) -->
+        <div class="scene" id="scene-13">
+            <div class="scene-number">Blessing 13</div>
+            <div class="blessing-text glow-text">
+                May <span class="name-highlight">Mona Akka</span> be<br>
+                rooted and established in love,<br>
+                filled with God's fullness
+            </div>
+            <div class="heart-beat">🌳</div>
+            <div class="bible-verse">
+                "And I pray that you, being rooted and established in love, may have power to grasp how wide and long and high and deep is the love of Christ."
+                <div class="verse-reference">— Ephesians 3:17-18</div>
+            </div>
+        </div>
+
+        <!-- Scene 15: Blessing 14 (84-90s) -->
+        <div class="scene" id="scene-14">
+            <div class="scene-number">Blessing 14</div>
+            <div class="blessing-text floating">
+                May the God of hope<br>
+                fill <span class="name-highlight">Mona Akka</span> with all joy<br>
+                and peace as she trusts in Him
+            </div>
+            <div class="crown">✨</div>
+            <div class="bible-verse">
+                "May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit."
+                <div class="verse-reference">— Romans 15:13</div>
+            </div>
+        </div>
+
+        <!-- Scene 16: Blessing 15 (90-96s) -->
+        <div class="scene" id="scene-15">
+            <div class="scene-number">Blessing 15</div>
+            <div class="blessing-text shimmer">
+                May <span class="name-highlight">Mona Akka</span> press on<br>
+                toward the goal to win the prize<br>
+                for which God has called her
+            </div>
+            <div class="heart-beat">🏆</div>
+            <div class="bible-verse">
+                "I press on toward the goal to win the prize for which God has called me heavenward in Christ Jesus."
+                <div class="verse-reference">— Philippians 3:14</div>
+            </div>
+        </div>
+
+        <!-- Scene 17: Blessing 16 (96-102s) -->
+        <div class="scene" id="scene-16">
+            <div class="scene-number">Blessing 16</div>
+            <div class="blessing-text glow-text">
+                May <span class="name-highlight">Mona Akka</span> be<br>
+                transformed by the renewing<br>
+                of her mind daily
+            </div>
+            <div class="dove">🕊️</div>
+            <div class="bible-verse">
+                "Do not conform to the pattern of this world, but be transformed by the renewing of your mind."
+                <div class="verse-reference">— Romans 12:2</div>
+            </div>
+        </div>
+
+        <!-- Scene 18: Blessing 17 (102-108s) -->
+        <div class="scene" id="scene-17">
+            <div class="scene-number">Blessing 17</div>
+            <div class="blessing-text floating">
+                May <span class="name-highlight">Mona Akka</span> shine<br>
+                like stars in the sky<br>
+                as she holds firmly to the word of life
+            </div>
+            <div class="heart-beat">⭐</div>
+            <div class="bible-verse">
+                "Then you will shine among them like stars in the sky as you hold firmly to the word of life."
+                <div class="verse-reference">— Philippians 2:15-16</div>
+            </div>
+        </div>
+
+        <!-- Scene 19: Blessing 18 (108-114s) -->
+        <div class="scene" id="scene-18">
+            <div class="scene-number">Blessing 18</div>
+            <div class="blessing-text shimmer">
+                May the Lord satisfy<br>
+                <span class="name-highlight">Mona Akka</span>'s desires with good things<br>
+                and renew her youth like the eagle's
+            </div>
+            <div class="crown">🦅</div>
+            <div class="bible-verse">
+                "Who satisfies your desires with good things so that your youth is renewed like the eagle's."
+                <div class="verse-reference">— Psalm 103:5</div>
+            </div>
+        </div>
+
+        <!-- Scene 20: Grand Finale (114-120s) -->
+        <div class="scene final-scene" id="scene-19">
+            <div class="scene-number">Final Blessing</div>
+            <div class="age-display">28
+            </div>
+            <div class="blessing-text" style="font-size: 2rem; margin-top: 20px;">
+                May this year be the year<br>
+                <span class="name-highlight">Mona Akka</span> walks into<br>
+                every promise God has spoken over her life
+            </div>
+            
+            <div class="final-prayer">
+                "Now to him who is able to do immeasurably more than all we ask or imagine, 
+                according to his power that is at work within us, to him be glory in the church 
+                and in Christ Jesus throughout all generations, for ever and ever! Amen."
+                <br><span style="color: #d4af37; font-size: 1rem; font-style: normal;">— Ephesians 3:20-21</span>
+            </div>
+            
+            <div class="amen">Amen 🙏</div>
+            <div class="signature">Happy 28th Birthday, Mona Akka</div>
+            <div style="margin-top: 20px; color: #4ecdc4; font-size: 1rem;">
+                "The Lord bless you and keep you"
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentScene = 0;
+        let totalScenes = 20;
+        let startTime;
+        let duration = 120000; // 2 minutes (120 seconds)
+        let isPlaying = false;
+        let musicPlaying = false;
+        let musicEnabled = false;
+
+        // Audio control
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            const control = document.getElementById('audioControl');
+            const icon = document.getElementById('audioIcon');
+            const text = document.getElementById('audioText');
+            
+            if (!musicEnabled) {
+                // First time - enable music
+                music.volume = 0.5;
+                music.play().then(() => {
+                    musicEnabled = true;
+                    musicPlaying = true;
+                    control.classList.add('playing');
+                    icon.textContent = '🔊';
+                    text.textContent = 'Music Playing';
+                    createMusicNotes();
+                }).catch(err => {
+                    console.log('Audio play failed:', err);
+                    text.textContent = 'Click to Try Music';
+                });
+            } else {
+                // Toggle play/pause
+                if (musicPlaying) {
+                    music.pause();
+                    musicPlaying = false;
+                    control.classList.remove('playing');
+                    icon.textContent = '🔇';
+                    text.textContent = 'Music Paused';
+                } else {
+                    music.play();
+                    musicPlaying = true;
+                    control.classList.add('playing');
+                    icon.textContent = '🔊';
+                    text.textContent = 'Music Playing';
+                }
+            }
+        }
+
+        // Create floating music notes
+        function createMusicNotes() {
+            if (!musicPlaying) return;
+            
+            const note = document.createElement('div');
+            note.className = 'music-note';
+            note.textContent = ['♪', '♫', '♬', '♩'][Math.floor(Math.random() * 4)];
+            note.style.left = Math.random() * window.innerWidth + 'px';
+            note.style.bottom = '100px';
+            note.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(note);
+            
+            setTimeout(() => note.remove(), 3000);
+            
+            if (musicPlaying) {
+                setTimeout(createMusicNotes, 800);
+            }
+        }
+
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 60; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                p.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                container.appendChild(p);
+            }
+        }
+
+        function startBlessings() {
+            // Try to start music if enabled
+            const music = document.getElementById('bgMusic');
+            if (musicEnabled && musicPlaying) {
+                music.currentTime = 0;
+                music.play();
+            }
+
+            document.getElementById('startScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('startScreen').style.display = 'none';
+            }, 800);
+            
+            createParticles();
+            startTime = Date.now();
+            isPlaying = true;
+            
+            // Start the show
+            showScene(0);
+            updateProgress();
+            
+            // Scene timings (each scene 6 seconds = 120 seconds total)
+            const sceneDuration = 6000;
+            
+            for (let i = 0; i < totalScenes; i++) {
+                setTimeout(() => {
+                    if (i > 0) showScene(i);
+                }, i * sceneDuration);
+            }
+            
+            // End after 2 minutes
+            setTimeout(() => {
+                endShow();
+            }, duration);
+        }
+
+        function showScene(index) {
+            // Hide all scenes
+            document.querySelectorAll('.scene').forEach(s => {
+                s.classList.remove('active');
+                s.classList.add('fade-out');
+            });
+            
+            // Show new scene
+            setTimeout(() => {
+                document.querySelectorAll('.scene').forEach(s => s.classList.remove('fade-out'));
+                const scene = document.getElementById(`scene-${index}`);
+                if (scene) scene.classList.add('active');
+            }, 100);
+            
+            currentScene = index;
+        }
+
+        function updateProgress() {
+            if (!isPlaying) return;
+            
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min((elapsed / duration) * 100, 100);
+            
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            const seconds = Math.floor(elapsed / 1000);
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('timer').textContent = 
+                `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            
+            if (elapsed < duration) {
+                requestAnimationFrame(updateProgress);
+            }
+        }
+
+        function endShow() {
+            isPlaying = false;
+            document.getElementById('timer').textContent = "AMEN";
+            
+            // Fade out music
+            const music = document.getElementById('bgMusic');
+            if (music && !music.paused) {
+                const fadeOut = setInterval(() => {
+                    if (music.volume > 0.1) {
+                        music.volume -= 0.1;
+                    } else {
+                        music.pause();
+                        clearInterval(fadeOut);
+                    }
+                }, 200);
+            }
+            
+            // Loop option
+            setTimeout(() => {
+                if (confirm('Blessings complete for Mona Akka! Watch again?')) {
+                    location.reload();
+                }
+            }, 2000);
+        }
+
+        // Keyboard control
+        window.addEventListener('keydown', (e) => {
+            if (!isPlaying) return;
+            if (e.key === 'ArrowRight') {
+                if (currentScene < totalScenes - 1) showScene(currentScene + 1);
+            } else if (e.key === 'ArrowLeft') {
+                if (currentScene > 0) showScene(currentScene - 1);
+            } else if (e.key === ' ') {
+                toggleMusic();
+            }
+        });
+
+        // Auto-enable music on first user interaction
+        document.addEventListener('click', function initAudio() {
+            if (!musicEnabled) {
+                toggleMusic();
+            }
+            document.removeEventListener('click', initAudio);
+        }, { once: true });
+    </script>
+</body>
+</html>
